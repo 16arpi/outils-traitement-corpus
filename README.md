@@ -1,47 +1,59 @@
 # Projet - dataset Stackoverflow
 
-Ce projet vise à construire un corpus de questions/réponses obtenues sur la plateforme Stackoverflow. Ce corpus est construit pour fine-tuner un modèle de base GPT, afin d'en faire un chatbot utile pour répondre à des questions de programmation.
+Ce projet vise à construire un classificateur automatique de questions StackOverflow. Ce corpus est construit pour fine-tuner un classifieur supervisé. Le cas d'usage est d'automatiquement catégoriser une nouvelle question publiée sur StackOverflow.
 
 ## Besoins du projet
 
-La finalité du projet est de construire un chatbot à destination des développeurs. L'idée est de leur permettre de poser une question en lien avec python, puis d'obtenir une réponse à leur question. Pour cela, nous devons trouver une source de données qui propose cette fonctionnalité : des questions de programmation et une réponse pertinente associée.
-
-Dans le cadre de notre projet, nous utiliserons la plateforme Stackoverflow comme source de données. Stackoverflow est un forum pour et par les développeurs. Il permet à tout à chacun de poser une question et la communauté est libre de lui répondre. Stackoverflow présente plusieurs avantages pour notre projet :
-
-* La plupart des questions ont une réponse unique et de qualité mise en avant : cela facilite la construction de paires question/réponse.
-* les réponses aux questions sont détaillées et pédagogiques.
-* le contenu de la plateforme est sous licence creative commons CC BY-SA, nous pouvons donc réutiliser les données tout en mentionnant leur source.
-
-Nous allons donc construire un crawler qui s'occupera de naviguer à travers les meilleurs Q/A de la plateforme sur le sujet "Python". Les documents HTML récupérées feront l'objet d'une extraction, d'un nettoyage et d'une augmentation.
+Le projet vise à élaborer un classifieur automatique de questions liées à l'informatique posée à la communauté. Pour entraîner notre classifieur, nous avons besoin de questions et, pour chaque, d'une catégorie. La source de données choisie est Stackoverlow. Plus grand forum d'entre-aide entre développeurs, Stackoverflow propose en accès libre (sous licence CC BY-SA) un nombre important de questions-réponses en lien avec l'informatique. À chaque question est associée différentes étiquettes (ex: python, java, c++ etc.) Nous allons donc construire un crawler qui s'occupera de naviguer à travers les Q/A les plus populaires et récupérer, au fur et à mesure, le chapeau de la question (un court extrait) et sa première étiquette.
 
 ## Récupération des données
 
 Les données sont scrapées grâce à la bibliothèque python [SeleniumBase](https://seleniumbase.io/) basée sur Selenium, une bibliothèque python permettant d'automatiser la manipulation de navigateurs webs. Le passage par selenium plutôt que des requêtes HTTP standards est nécessaire car StackOverflow se protège derrière un proxy CloudFlare. Celui-ci protège StackOverflow des crawlers.
 
-Le processus de crawl se divise en plusieurs étapes :
-- navigation à travers l'index des publications ayant le tag `python` (sur 100 pages)
-- enregistrement de chacune des pages au format HTML
-- ouverture de ces pages, récupération des liens vers les publications, enregistrement des publications au format HTML
+Le processus de crawl est une itération à travers la liste des questions les mieux notées de la plateforme. Chaque page est enregistrée sur le disque. Dans un second temps, un script de scraping récupère dans chacune des pages d'une part le titre et l'extrait de la question, et d'autre part le _tag_ de la question.
 
-Le script du crawl se trouve dans `./scripts/process/crawl.py`.Les fichiers sont placés dans le sous-dossier `./data/raw`. Notre collecte prévoyait initialement 5000 pages, nous nous sommes arrêté à 1200 pages.
+Les pages HTML bruts ne sont pas directement utilisables pour notre entraînement. Pour chaque fichier HTML (un par publication), il faut extraire les questions et son étiquette principale. On utilise pour cela la bibliothèque BeautifulSoup : différents sélecteurs CSS permettent de récupérer le HTML du contenu de la question et celui de la première étiquette.
 
-## Extraction et nettoyage
+Le script du crawl se trouve dans `./scripts/process/crawl.py`.Les fichiers sont placés dans le sous-dossier `./data/raw`. Notre collecte est à hauteur de 15000 questions.
 
-Les pages HTML bruts ne sont pas directement utilisables pour notre entraînement. Pour chaque fichier HTML (un par publication), il faut extraire la question et la réponse la plus pertinente. On utilise pour cela la bibliothèque BeautifulSoup : différents sélecteurs CSS permettent de récupérer le HTML du contenu de la question et celui de la première réponse (la mieux votée).
+## Visualisation des données
 
-Par la suite, pour rendre nos données plus propres, nous appliquons à notre HTML une traduction vers le Markdown. Cela permettra à notre chatbot de retourner une réponse au format Markdown, une format de mise en page plus souple que le HTML.
+![Distibution de la taille des questions](./figures/distribution_length.jpeg)
 
-Le script permettant cette extraction et ce nettoyage se trouve dans `./scripts/process/scrape.py`. Le script génère un fichier CSV (une colonne _question_, une colonne _answer_) placé dans `./data/preprocess/qa.csv`.
+On observe ci-dessus que les questions partagent une taille relativement stable, autour 250 caractères. Cela est logique, car il s'agit d'extraits tronqués automatiquement.
+
+![Distibution des tags à travers les questions](./figures/distribution_tags.jpeg)
+
+Ici, on observe que la distribution est fortement inégale entre les classes, avec quelques classes dominant toutes les autres. Cela peut avoir un impact sur l'entraînement de notre model : la sur-représentation de certaine classe peut avoir tendance à rendre difficile la détection des classes moins représentées dans notre dataset.
+
+On observe la domination des _tags_ suivants (avec 120 tags différents en tout) :
+
+```
+javascript               277
+python                   236
+git                      212
+java                      88
+c#                        71
+                        ...
+apache-flex                1
+ajax                       1
+pdf                        1
+model-view-controller      1
+editor                     1
+```
 
 ## Fine-tuning
 
 ### Choix de l'architecture du modèle
-
-Nous souhaitons construire un chatbot se rapprochant de ChatGPT. Pour cela, nous optons pour le fine-tuning d'un modèle GPT (General Pretrained Transformers). Fine-tuner un GPT implique de choisir un modèle de base et de poursuivre son entraînement sur un contenu texte qui respecte une forme spécifique semblable à un enchaînement de questions/réponses.
 
 ### Trouver un modèle de base
 
 
 ### Fine-tuner le modèle de base
 
+## Evaluation
+
+### Sampling
+
+###
 

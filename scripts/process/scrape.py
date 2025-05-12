@@ -1,35 +1,29 @@
 import bs4, csv
 import markdownify
 
-with open("./data/preprocess/qa.csv", "w") as fexport:
-    writer = csv.DictWriter(fexport, fieldnames=["question", "answer"])
+with open("./data/preprocess/tags.csv", "w") as fexport:
+    writer = csv.DictWriter(fexport, fieldnames=["question", "tag"])
     writer.writeheader()
-    with open("./data/raw/pages/urls.txt") as furls:
+    with open("./data/raw/urls.txt") as furls:
         for i, file in enumerate(furls):
             file = file.strip()
             if not file: continue
 
-            with open(f"./data/raw/pages/{file}") as fpage:
+            with open(f"./data/raw/{file}") as fpage:
                 content = fpage.read()
-            soup = bs4.BeautifulSoup(content)
+            soup = bs4.BeautifulSoup(content, "html.parser")
 
-            # Question
-            question = soup.select_one("#question .s-prose")
-            for notice in question.select(".s-notice"):
-                notice.decompose()
+            for qt in soup.select("#questions .s-post-summary"):
+                # Question
+                title = qt.select_one(".s-post-summary--content-title").text.strip()
+                question =  qt.select_one(".s-post-summary--content-excerpt").text.strip()
 
-            question_md = markdownify.markdownify(question.encode_contents())
+                tag = qt.select_one(".s-tag").text
 
-            # Anwser
-            answer = soup.select_one("#answers .answer .s-prose")
-            for notice in question.select(".s-notice"):
-                notice.decompose()
-
-            answer_md = markdownify.markdownify(answer.encode_contents())
-            writer.writerow({
-                "question": question_md,
-                "answer": answer_md
-            })
-            print(i)
+                writer.writerow({
+                    "question": ' '.join([title, question]),
+                    "tag": tag
+                })
+                print(i)
 
 

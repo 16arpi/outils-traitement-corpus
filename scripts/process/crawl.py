@@ -4,7 +4,7 @@ import bs4
 
 def get_navigation_urls():
     for i in range(1, 100):
-        yield i, f"https://stackoverflow.com/questions/tagged/python?tab=votes&page={i}&pagesize=50"
+        yield i, f"https://stackoverflow.com/questions?tab=votes&page={i}"
 
 def crawl_index():
     with SB(uc=True, test=True, locale="en") as sb:
@@ -15,6 +15,7 @@ def crawl_index():
             sb.sleep(2)
             sb.save_page_source(f"./data/raw/page-{i}.html", folder=None)
 
+# Use before, don't use anymore
 def crawl_posts():
     with SB(uc=True, test=True, locale="en") as sb:
         with open("./data/raw/pages/urls.txt", "w") as export:
@@ -37,4 +38,4 @@ def crawl_posts():
 
 
 
-crawl_posts()
+crawl_index()
