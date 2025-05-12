@@ -44,16 +44,22 @@ editor                     1
 
 ## Fine-tuning
 
-### Choix de l'architecture du modèle
+Notre but est de classer nos questions avec un tag spécifique. Notre tâche ne demande pas à générer du texte ou autre. Pour cette raison, nous pouvons tirer profit d'un modèle de transformers proposant la seule partie _encoder_. Dans notre cas, nous avons opté pour BERT, un encoder transformer construit par Google et disponible depuis 2018. BERT est un modèle de plongement sémantique reposant sur la partie _encoder_ du transformers. Il permet d'obtenir un vecteur représentant une séquence de tokens et, se faisant, permet d'entraîner un dataset de classification.
 
-### Trouver un modèle de base
+Notre projet ré-implémente la méthode de fine-tuning [présentée par HuggingFace](https://huggingface.co/docs/transformers/en/training). Celle-ci détaille comment fine-tuner un modèle BERT à partir d'un dataset. Nous avons adapté ce guide à notre propre dataset (voir le script `./scripts/process/train.py`). Le fine-tuning a été fait sur 5 époques avec, pour chaque, une mesure d'_accuracy_ entre un sous-dataset _train_ et un sous-dataset _eval_ (part 80%/20%).
 
+Le processus de finetuning montre la convergence suivante :
 
-### Fine-tuner le modèle de base
+![Visualisation du processus de finetuning](./figures/metrics.jpeg)
 
 ## Evaluation
 
-### Sampling
+Pour l'évaluation, nous avons appliqué notre modèle à notre sous-ensemble de test. Il en retourne les métriques suivantes (obtenu grâce au script `./scripts/plot/evaluation.py`) :
 
-###
+|Métrique|Valeur|
+|---|---|
+|Accuracy|0.78|
+|Macro-moyenne|0.27|
+|Micro-moyenne|0.74|
 
+On observe ainsi une mesure d'_accuracy_ assez bonne (78%) avec une Micro-moyenne de F1 proche (74%). En revanche, la macro-moyenne est très mauvaise (27%). On peut expliquer ce mauvais score par la sur-représentation de très peu de classes (javascript, git, python, java). Quant aux classes sous-représentés, une erreur de classification les concernant influence grandement la macro-moyenne.
