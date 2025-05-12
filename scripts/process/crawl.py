@@ -6,6 +6,7 @@ def get_navigation_urls():
     for i in range(1, 100):
         yield i, f"https://stackoverflow.com/questions?tab=votes&page={i}"
 
+
 def crawl_index():
     with SB(uc=True, test=True, locale="en") as sb:
         for i, url in get_navigation_urls():
@@ -15,6 +16,7 @@ def crawl_index():
             sb.sleep(2)
             sb.save_page_source(f"./data/raw/page-{i}.html", folder=None)
 
+
 # Use before, don't use anymore
 def crawl_posts():
     with SB(uc=True, test=True, locale="en") as sb:
@@ -22,7 +24,8 @@ def crawl_posts():
             i = 671
             for line in open("./data/raw/index/urls.txt"):
                 line = line.strip()
-                if not line: continue
+                if not line:
+                    continue
 
                 with open(f"./data/raw/index/{line}") as file:
                     content = file.read()
@@ -35,7 +38,6 @@ def crawl_posts():
                     sb.sleep(1)
                     sb.save_page_source(f"./data/raw/pages/page-{i}.html", folder=None)
                     i += 1
-
 
 
 crawl_index()

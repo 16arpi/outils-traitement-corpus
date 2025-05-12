@@ -12,5 +12,6 @@ def distribution_length(data):
     fig = questions.hist()
     plt.savefig("./figures/distribution_length.jpeg")
 
+
 tags = pd.read_csv("./data/preprocess/tags.csv")
 distribution_length(tags)
