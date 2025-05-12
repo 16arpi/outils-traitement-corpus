@@ -1,0 +1,10 @@
+BeautifulSoup4
+pandas
+matplotlib
+transformers
+evaluate
+scikit-learn
+seleniumbase
+numpy
+pylint
+black
