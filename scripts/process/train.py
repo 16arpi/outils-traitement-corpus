@@ -20,7 +20,7 @@ dataset = load_dataset("csv", data_files="./data/clean/dataset.csv")
 dataset = dataset["train"].train_test_split(test_size=0.2)
 
 dataset = dataset.map(tokenize, batched=True)
-model = AutoModelForSequenceClassification.from_pretrained("google-bert/bert-base-cased", num_labels=5)
+model = AutoModelForSequenceClassification.from_pretrained("google-bert/bert-base-cased", num_labels=120)
 
 training_args = TrainingArguments(
     output_dir="./model/stackoverflow",
