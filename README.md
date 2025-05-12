@@ -63,3 +63,7 @@ Pour l'évaluation, nous avons appliqué notre modèle à notre sous-ensemble de
 |Micro-moyenne|0.74|
 
 On observe ainsi une mesure d'_accuracy_ assez bonne (78%) avec une Micro-moyenne de F1 proche (74%). En revanche, la macro-moyenne est très mauvaise (27%). On peut expliquer ce mauvais score par la sur-représentation de très peu de classes (javascript, git, python, java). Quant aux classes sous-représentés, une erreur de classification les concernant influence grandement la macro-moyenne.
+
+## Linting, formating et docstring
+
+Le projet a fait l'objet d'un nettoyage grâce aux programmes `black` et `pylint`. Des docstring ont été rédigées pour chaque module, ainsi que pour chaque fonction. Github Copilot a été utilisé pour les docstring des fonctions **exclusivement** (surtout pas pour le code).
