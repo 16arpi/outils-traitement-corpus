@@ -1,5 +1,7 @@
-import bs4, csv
-import markdownify
+"""Module to scrape stackoverflow data from downloaded HTML pages"""
+
+import csv
+import bs4
 
 with open("./data/preprocess/tags.csv", "w") as fexport:
     writer = csv.DictWriter(fexport, fieldnames=["question", "tag"])
